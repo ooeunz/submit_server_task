@@ -14,13 +14,14 @@ router.get('/:groupIdx', async (req, res) => {
         if (!member || !group) console.log(`file read err : ${err}`);   // debug     
 
         IDX = req.params.groupIdx;
-
         let groupNum = group[String(Number(IDX - 1))].name;
 
-        people = member.map(({name, groupIdx}) => {
-            console.log(name);
-            if (groupIdx === IDX) return name;
-        })
+        // people = member.map(({name, groupIdx}) => {
+        //     console.log(name);
+        //     if (groupIdx === IDX) return name;
+        // })
+
+        people = member.filter(it => it.groupIdx === IDX).map(it => it.name);
         
         res.send(`${groupNum} : ${people}`);
         res.send
