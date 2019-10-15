@@ -6,7 +6,6 @@ const json2csv = require('json2csv');
 const fs = require('fs');
 const stringify = require('csv-stringify');
 
-
 // path
 const memberFilePath = __dirname + '/../../public/csv/member.csv'
 
@@ -30,10 +29,8 @@ router.get('/', async (req, res) => {
             res.send(`member scv file is empty`);
         } else {
             // running
-            let arr = new Array();
-            member.forEach(({name, groupIdx}) => {
-                arr.push(groupIdx);
-            });
+            let arr = member.map(n => n. groupIdx);
+            
             arr = shuffle(arr);
 
             for (let i in member) {

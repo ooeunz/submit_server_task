@@ -12,10 +12,18 @@ router.get('/:groupIdx', async (req, res) => {
         const group = await csv().fromFile(groupFilePath);
 
         if (!member || !group) console.log(`file read err : ${err}`);   // debug     
-        else {  // running
-            const groupIdx = req.params.groupIdx;
-            res.send(group[String(Number(groupIdx - 1))].name);
-        }
+
+        IDX = req.params.groupIdx;
+
+        let groupNum = group[String(Number(IDX - 1))].name;
+
+        people = member.map(({name, groupIdx}) => {
+            console.log(name);
+            if (groupIdx === IDX) return name;
+        })
+        
+        res.send(`${groupNum} : ${people}`);
+        res.send
     } catch (err) {
         console.log(`err with csv : ${err}`);
     }
