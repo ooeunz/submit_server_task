@@ -29,8 +29,7 @@ router.get('/', async (req, res) => {
             res.send(`member scv file is empty`);
         } else {
             // running
-            let arr = member.map(n => n. groupIdx);
-            
+            let arr = member.map(n => n.groupIdx);
             arr = shuffle(arr);
 
             for (let i in member) {
@@ -48,8 +47,7 @@ router.get('/', async (req, res) => {
                             if (err) throw err;
                         });
                     }
-                })
-                
+                })   
             } catch {
                 console.log(`fs.writeFile err : ${err}`);
                 res.send(`fs.writeFile err : ${err}`);

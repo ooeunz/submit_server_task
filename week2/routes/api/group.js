@@ -5,7 +5,7 @@ const router = express.Router();
 const memberFilePath = __dirname + '/../../public/csv/member.csv'
 const groupFilePath = __dirname + '/../../public/csv/group.csv'
 
-// find group members
+// find group member
 router.get('/:groupIdx', async (req, res) => {
     try {
         const member = await csv().fromFile(memberFilePath);
@@ -16,15 +16,9 @@ router.get('/:groupIdx', async (req, res) => {
         IDX = req.params.groupIdx;
         let groupNum = group[String(Number(IDX - 1))].name;
 
-        // people = member.map(({name, groupIdx}) => {
-        //     console.log(name);
-        //     if (groupIdx === IDX) return name;
-        // })
-
-        people = member.filter(it => it.groupIdx === IDX).map(it => it.name);
+        let people = member.filter(it => it.groupIdx === IDX).map(it => it.name);
         
         res.send(`${groupNum} : ${people}`);
-        res.send
     } catch (err) {
         console.log(`err with csv : ${err}`);
     }
