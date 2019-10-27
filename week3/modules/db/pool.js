@@ -1,64 +1,74 @@
-const poolPromise = require('../config/dbConfig')
+const poolPromise = require('../../config/dbConfig');
+
 module.exports = {
     queryParam_None: async (...args) => {
         const query = args[0]
         let result
-        const pool = await poolPromise; 
+        const pool = await poolPromise;
+        console.log("1");
         try {
             var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
+            console.log("2");
             result = await connection.query(query) || null // query문의 결과 || null 값이 result에 들어간다.
         } catch (err) {
+            console.log("3");
             console.log(err)
+            console.log("4");
             connection.rollback(() => {})
         } finally {
+            console.log("5");
             pool.releaseConnection(connection) // waterfall 에서는 connection.release()를 사용했지만, 이 경우 pool.releaseConnection(connection) 을 해준다.
-            return result 
+            console.log("6");
+            return result
         }
     },
     queryParam_Arr: async (...args) => {
         const query = args[0]
         const value = args[1] // array
-        let result 
+        let result
         try {
-        var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
-        result = await connection.query(query, value) || null // 두 번째 parameter에 배열 => query문에 들어갈 runtime 시 결정될 value
+            var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
+            result = await connection.query(query, value) || null // 두 번째 parameter에 배열 => query문에 들어갈 runtime 시 결정될 value
         } catch (err) {
             connection.rollback(() => {})
             next(err)
         } finally {
             pool.releaseConnection(connection) // waterfall 에서는 connection.release()를 사용했지만, 이 경우 pool.releaseConnection(connection) 을 해준다.
-            return result 
+            return result
         }
     },
     queryParam_Parse: async (inputquery, inputvalue) => {
-        const query = inputquery 
+        const query = inputquery
         const value = inputvalue
-        let result 
+        let result
         try {
             var connection = await pool.getConnection()
-            result = await connection.query(query, value) || null 
+            result = await connection.query(query, value) || null
             console.log(result)
         } catch (err) {
-            console.log(err) 
-            connection.rollback(() => {}) 
+            console.log(err)
+            connection.rollback(() => {})
             next(err)
-        } finally { pool.releaseConnection(connection) 
+        } finally {
+            pool.releaseConnection(connection)
             return result
-        } 
+        }
     },
     Transaction: async (...args) => {
         let result = "Success"
+
         try {
-            var connection = await pool.getConnection() 
+            var connection = await pool.getConnection()
             await connection.beginTransaction()
             await args[0](connection, ...args)
             await connection.commit()
         } catch (err) {
-            await connection.rollback() 
-            console.log("mysql error! err log =>" + err) 
+            await connection.rollback()
+            console.log("mysql error! err log =>" + err)
             result = undefined
-        } finally { pool.releaseConnection(connection) 
+        } finally {
+            pool.releaseConnection(connection)
             return result
-        } 
+        }
     }
 }

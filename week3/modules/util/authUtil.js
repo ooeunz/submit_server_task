@@ -1,5 +1,5 @@
 // authUtil.js 
-const authUtil = {
+module.exports = {
     successTrue: (message, data) => { 
         return { success: true, message: message, data: data } 
     },
@@ -7,5 +7,3 @@ const authUtil = {
         return { success: false, message: message }
     }, 
 }
-
-module.exports = authUtil
