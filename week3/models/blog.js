@@ -26,7 +26,22 @@ module.exports = {
             json: au.successTrue(rm.BOARD_CREATE_SUCCESS, result)
         };
     },
-    select: async () => {
+    selectOne: async (blogIdx) => {
+        const query = `SELECT * FROM ${table} WHERE blogIdx = '${blogIdx}'`;
+        const result = await pool.queryParam_None(query);
+
+        if (!result) {
+            return {
+                code: sc.BAD_REQUEST,
+                json: au.successFalse(rm.BOARD_READ_FAIL)
+            };
+        }
+        return {
+            code: sc.OK,
+            json: au.successTrue(rm.BOARD_READ_SUCCESS, result)
+        };
+    },
+    selectAll: async () => {
         const query = `SELECT * FROM ${table}`;
         const result = await pool.queryParam_None(query);
 
@@ -59,6 +74,8 @@ module.exports = {
         };
     },
     delete: async (blogIdx) => {
+        console.log(blogIdx);
+        
         const query = `DELETE FROM ${table} WHERE blogIdx = ${blogIdx}`;
         const result = await pool.queryParam_None(query);
 
