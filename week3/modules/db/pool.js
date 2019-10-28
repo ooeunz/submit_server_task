@@ -5,20 +5,14 @@ module.exports = {
         const query = args[0]
         let result
         const pool = await poolPromise;
-        console.log("1");
         try {
             var connection = await pool.getConnection() // connection을 pool에서 하나 가져온다.
-            console.log("2");
             result = await connection.query(query) || null // query문의 결과 || null 값이 result에 들어간다.
         } catch (err) {
-            console.log("3");
             console.log(err)
-            console.log("4");
             connection.rollback(() => {})
         } finally {
-            console.log("5");
             pool.releaseConnection(connection) // waterfall 에서는 connection.release()를 사용했지만, 이 경우 pool.releaseConnection(connection) 을 해준다.
-            console.log("6");
             return result
         }
     },

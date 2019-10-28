@@ -9,7 +9,7 @@ const Blog = require('../models/Blog');
 
 
 // CREATE
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const {title, content} = req.body;
 
     // TODO 1: title, content 값 확인하기
@@ -17,9 +17,8 @@ router.post('/', (req, res) => {
 
     // TODO 2: 작성하기
     try {
-        const {code, json} = Blog.insert(title, content);
-        // console.log(`code: ${code}, json: ${json}`);
-        
+        const {code, json} = await Blog.insert(title, content);
+        console.log(`code: ${code}, json: ${json}`);
         res.status(code).send(json);
     } catch (err) {
         console.log(err);
@@ -31,8 +30,8 @@ router.post('/', (req, res) => {
 router.get('/', (req, res) => {
     // TODO 1: 읽어오기
     try {
-        const {code, json} = Blog.insert(title, content);
-        res.status(code).send(json);
+        const {code, json} = Blog.select();
+        res.status(200).send(json);
     } catch (err) {
         console.log(err);
         res.status(sc.INTERNAL_SERVER_ERROR).send(au.successFalse(rm.BOARD_READ_ALL_FAIL));
