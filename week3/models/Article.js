@@ -4,14 +4,14 @@ const sc = require('../modules/util/statusCode');
 const pool = require('../modules/db/pool');
 
 // global variable	
-const table = 'blog';
+const table = 'articles';
 
 // exports
 module.exports = {
-    insert: async (blogName) => {
-        const fields = 'blogName';
-        const questions = `'${blogName}'`;
-        const query = `INSERT INTO ${table} (${fields}) VALUES(${questions})`;
+    insert: async (title, content, blogIdx) => {
+        const fields = 'title, content';
+        const questions = `'${title}', '${content}'`;
+        const query = `INSERT INTO ${table} (${fields}) VALUES(${questions}, (SELECT blogIdx from blog WHERE blogIdx='${blogIdx}'))`;
         const result = await pool.queryParam_None(query);
         
         // running
@@ -49,16 +49,16 @@ module.exports = {
         if (!result) {
             return {
                 code: sc.BAD_REQUEST,
-                json: au.successFalse(rm.BOARD_READ_ALL_FAIL)
+                json: au.successFalse(rm.BOARD_READ_ALL_SUCCESS)
             };
         }
         return {
             code: sc.OK,
-            json: au.successTrue(rm.BOARD_READ_ALL_SUCCESS, result)
+            json: au.successTrue(rm.BOARD_READ_ALL_FAIL, result)
         };
     },
-    update: async (blogIdx, blogName) => {
-        const query = `UPDATE ${table} SET blogName = '${blogName}' WHERE blogIdx = ${blogIdx}`;
+    update: async (title, content, blogIdx) => {
+        const query = `UPDATE ${table} SET title = ${title}, content = ${content} WHERE blogIdx = ${blogIdx}`;
         const result = await pool.queryParam_None(query);
 
         // running
@@ -74,6 +74,8 @@ module.exports = {
         };
     },
     delete: async (blogIdx) => {
+        console.log(blogIdx);
+        
         const query = `DELETE FROM ${table} WHERE blogIdx = ${blogIdx}`;
         const result = await pool.queryParam_None(query);
 

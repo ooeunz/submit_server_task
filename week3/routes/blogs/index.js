@@ -1,23 +1,23 @@
 const express = require('express');
 const router = express.Router()
 
-const au = require('../modules/util/authUtil');
-const rm = require('../modules/util/responseMessage');
-const sc = require('../modules/util/statusCode');
+const au = require('../../modules/util/authUtil');
+const rm = require('../../modules/util/responseMessage');
+const sc = require('../../modules/util/statusCode');
 
-const Blog = require('../models/Blog');
+const Blog = require('../../models/Blog');
 
+router.use('/:blogIdx/articles', require('./articles'));
 
-// CREATE
 router.post('/', async (req, res) => {
-    const {title, content} = req.body;
+    const {blogName} = req.body;
 
-    // TODO 1: title, content 값 확인하기
-    if (!title || !content) res.status(sc.BAD_REQUEST).send(au.successFalse(rm.NULL_VALUE));
+    // TODO 1: blogName 값 확인하기
+    if (!blogName) res.status(sc.BAD_REQUEST).send(au.successFalse(rm.NULL_VALUE));
 
     // TODO 2: 작성하기
     try {
-        const {code, json} = await Blog.insert(title, content);
+        const {code, json} = await Blog.insert(blogName);
         console.log(`code: ${code}, json: ${json}`);
         res.status(code).send(json);
     } catch (err) {
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     // TODO 1: 읽어오기
     try {
         const {code, json} = await Blog.selectAll();
-        res.status(200).send(json);
+        res.status(code).send(json);
     } catch (err) {
         console.log(err);
         res.status(sc.INTERNAL_SERVER_ERROR).send(au.successFalse(rm.BOARD_READ_ALL_FAIL));
@@ -48,7 +48,7 @@ router.get('/:blogIdx', async (req, res) => {
     // TODO 2: 읽어오기
     try {
         const {code, json} = await Blog.selectOne(blogIdx);
-        res.status(200).send(json);
+        res.status(code).send(json);
     } catch (err) {
         console.log(err);
         res.status(sc.INTERNAL_SERVER_ERROR).send(au.successFalse(rm.BOARD_READ_ALL_FAIL));
@@ -57,14 +57,14 @@ router.get('/:blogIdx', async (req, res) => {
 
 // UPDATE
 router.put('/', async (req, res) => {
-    const {title, content, blogIdx} = req.body;
+    const {blogIdx, blogName} = req.body;
 
-    // TODO 1: title, content, blogIdx 값 확인하기
-    if (!title || !content || !blogIdx) res.status(sc.BAD_REQUEST).send(au.successFalse(rm.NULL_VALUE));
+    // TODO 1: blogIdx, blogName 값 확인하기
+    if (!blogIdx || !blogName) res.status(sc.BAD_REQUEST).send(au.successFalse(rm.NULL_VALUE));
     
     // TODO 2: 수정하기
     try {
-        const {code, json} = await Blog.update(title, content, blogIdx);
+        const {code, json} = await Blog.update(blogIdx, blogName);
         res.status(code).send(json);
     } catch (err) {
         console.log(err);
