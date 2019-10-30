@@ -4,14 +4,16 @@ const sc = require('../modules/util/statusCode');
 const pool = require('../modules/db/pool');
 
 // global variable	
-const table = 'articles';
+const table = 'article';
 
 // exports
-module.exports = {
+article = {
     insert: async (title, content, blogIdx) => {
-        const fields = 'title, content';
-        const questions = `'${title}', '${content}'`;
-        const query = `INSERT INTO ${table} (${fields}) VALUES(${questions}, (SELECT blogIdx from blog WHERE blogIdx='${blogIdx}'))`;
+        
+        const fields = 'title, content, blogIdx';
+        const questions = `'${title}', '${content}', '${blogIdx}'`;
+        
+        const query = `INSERT INTO ${table} (${fields}) VALUES(${questions})`;
         const result = await pool.queryParam_None(query);
         
         // running
@@ -19,15 +21,15 @@ module.exports = {
             return {
                 code: sc.BAD_REQUEST,
                 json: au.successFalse(rm.BOARD_CREATE_FAIL)
-            };
+            }
         }
         return {
             code: sc.OK,
             json: au.successTrue(rm.BOARD_CREATE_SUCCESS, result)
-        };
+        }
     },
-    selectOne: async (blogIdx) => {
-        const query = `SELECT * FROM ${table} WHERE blogIdx = '${blogIdx}'`;
+    selectOne: async (blogIdx, articleIdx) => {
+        const query = `SELECT * FROM ${table} WHERE blogIdx = '${blogIdx}' AND articleIdx = '${articleIdx}'`;
         const result = await pool.queryParam_None(query);
 
         if (!result) {
@@ -37,9 +39,9 @@ module.exports = {
             };
         }
         return {
-            code: sc.OK,
-            json: au.successTrue(rm.BOARD_READ_SUCCESS, result)
-        };
+                code: sc.OK,
+                json: au.successTrue(rm.BOARD_READ_SUCCESS, result)
+            };
     },
     selectAll: async () => {
         const query = `SELECT * FROM ${table}`;
@@ -49,16 +51,16 @@ module.exports = {
         if (!result) {
             return {
                 code: sc.BAD_REQUEST,
-                json: au.successFalse(rm.BOARD_READ_ALL_SUCCESS)
+                json: au.successFalse(rm.BOARD_READ_ALL_FAIL)
             };
         }
         return {
             code: sc.OK,
-            json: au.successTrue(rm.BOARD_READ_ALL_FAIL, result)
+            json: au.successTrue(rm.BOARD_READ_ALL_SUCCESS, result)
         };
     },
-    update: async (title, content, blogIdx) => {
-        const query = `UPDATE ${table} SET title = ${title}, content = ${content} WHERE blogIdx = ${blogIdx}`;
+    update: async (title, content, blogIdx, articleIdx) => {
+        const query = `UPDATE ${table} SET title = '${title}', content = '${content}' WHERE blogIdx = '${blogIdx}' AND articleIdx = '${articleIdx}'`;
         const result = await pool.queryParam_None(query);
 
         // running
@@ -73,10 +75,8 @@ module.exports = {
             json: au.successTrue(rm.BOARD_UPDATE_SUCCESS, result)
         };
     },
-    delete: async (blogIdx) => {
-        console.log(blogIdx);
-        
-        const query = `DELETE FROM ${table} WHERE blogIdx = ${blogIdx}`;
+    delete: async (blogIdx, articleIdx) => {
+        const query = `DELETE FROM ${table} WHERE blogIdx = '${blogIdx}' AND articleIdx = '${articleIdx}'`;
         const result = await pool.queryParam_None(query);
 
         // running
@@ -92,3 +92,5 @@ module.exports = {
         };
     }
 }
+
+module.exports = article;
